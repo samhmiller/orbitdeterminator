@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pylab as plt
 from propagation import sgp4
-from PyInquirer import prompt
+import inquirer
 
 def process(data_file, error_apriori, units):
     '''
@@ -38,18 +38,12 @@ def process(data_file, error_apriori, units):
     print("(SPACE to toggle, UP/DOWN to navigate, RIGHT/LEFT to select/deselect and ENTER to submit)")
     print("*if nothing is selected, Triple Moving Average followed by Savitzky Golay will be applied")
     questions = [
-        {
-            "type": "checkbox",
-            "message": "Select filter(s)",
-            "name": "filter",
-            "choices": [
-                {'name': 'Savitzky Golay Filter'},
-                {'name': 'Triple Moving Average Filter'}
-                ]
-        }
+      inquirer.Checkbox('filter',
+                        message="Select filter(s)",
+                        choices=['Savitzky Golay Filter', 'Triple Moving Average Filter'],
+                        ),
     ]
-
-    choices = prompt(questions)
+    choices = inquirer.prompt(questions)
     data_after_filter = data
 
     if(len(choices['filter']) == 0):
@@ -93,20 +87,12 @@ def process(data_file, error_apriori, units):
     print("(SPACE to toggle, UP/DOWN to navigate, RIGHT/LEFT to select/deselect and ENTER to submit)")
     print("*if nothing is selected, Cubic Spline Interpolation will be used for Orbit Determination")
     questions = [
-        {
-            "type": "checkbox",
-            "message": "Select Method(s)",
-            "name": "method",
-            "choices": [
-                {'name': 'Lamberts Kalman'},
-                {'name': 'Cubic Spline Interpolation'},
-                {'name': 'Ellipse Best Fit'},
-                {'name': 'Gibbs 3 Vector'}
-                ]
-        }
+      inquirer.Checkbox('method',
+                        message="Select Method(s)",
+                        choices=['Lamberts Kalman', 'Cubic Spline Interpolation', 'Ellipse Best Fit', 'Gibbs 3 Vector'],
+                        ),
     ]
-
-    choices = prompt(questions)
+    choices = inquirer.prompt(questions)
     kep_elements = {}
 
     if(len(choices['method']) == 0):
@@ -166,7 +152,7 @@ def process(data_file, error_apriori, units):
         order.append(str(key))
 
     # Print the final orbital elements for all solutions
-    kep_elements = ["Semi major axis (a)(km)", "Eccentricity (e)", "Inclination (i)(deg)", "Argument of perigee (omega)(deg)", "Right acension of ascending node (Omega)(deg)", "True anomaly (v)(deg)", "Frequency (f)(rev/day)"]
+    kep_elements = ["Semi major axis (a)(km)", "Eccentricity (e)", "Inclination (i)(deg)", "Argument of perigee (ω)(deg)", "Right acension of ascending node (Ω)(deg)", "True anomaly (v)(deg)", "Frequency (f)(rev/day)"]
     for i in range(0, len(order)):
         print("\n******************Output for %s Method******************\n" % order[i])
         for j in range(0, 7):
