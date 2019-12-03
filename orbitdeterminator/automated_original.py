@@ -19,12 +19,12 @@ from kep_determination import (lamberts_kalman, interpolation, gibbsMethod, elli
 from propagation import sgp4
 
 
-SOURCE_ABSOLUTE = os.path.join(os.getcwd(), "example_data", "SourceCSV")  # Absolute path of source directory
+SOURCE_ABSOLUTE = os.getcwd() + "/example_data/SourceCSV"  # Absolute path of source directory
 print("Do you wish to reset(deinit/init) git repository? [y/n]")
 user_input1 = input()
 if(user_input1 == "y" or user_input1 == "Y"):
-    os.system("cd %s & rmdir /s .git 2>nul && rmdir /s .gitignore 2>nul" % (SOURCE_ABSOLUTE))
-os.system("cd %s & git init" % (SOURCE_ABSOLUTE))
+    os.system("cd %s; rm -rf .git && rm -rf .gitignore" % (SOURCE_ABSOLUTE))
+os.system("cd %s; git init" % (SOURCE_ABSOLUTE))
 
 
 def untracked_files():
@@ -36,7 +36,7 @@ def untracked_files():
     '''
 
     res = run(
-        "cd %s & git status" % (SOURCE_ABSOLUTE),
+        "cd %s ; git status" % (SOURCE_ABSOLUTE),
         stdout=PIPE, stderr=PIPE,
         universal_newlines=True,
         shell=True
@@ -59,7 +59,7 @@ def stage(processed):
     for file in processed:
         print("staging")
         run(
-            "cd %s & git add %s" % (SOURCE_ABSOLUTE, file),
+            "cd %s;git add '%s'" % (SOURCE_ABSOLUTE, file),
             stdout=PIPE, stderr=PIPE,
             universal_newlines=True,
             shell=True
@@ -104,7 +104,7 @@ def process(data_file, error_apriori, name):
     print(" ")
 
     # Save the filtered data into a new csv called "filtered"
-    np.savetxt(os.path.join(os.getcwd(), "example_data", "DestinationCSV", "%s_filtered.csv" % (name)), data_after_filter, delimiter=",")
+    np.savetxt(os.getcwd() + "/example_data/DestinationCSV/" + "%s_filtered.csv" % (name), data_after_filter, delimiter=",")
 
     # Apply Lambert's solution for the filtered data set
     kep_lamb = lamberts_kalman.create_kep(data_after_filter)
@@ -146,7 +146,7 @@ def process(data_file, error_apriori, name):
     kep_final[:, 3] = np.ravel(kep_final_gibbs)
 
     # Print the final orbital elements for all solutions
-    kep_elements = ["Semi major axis (a)(km)", "Eccentricity (e)", "Inclination (i)(deg)", "Argument of perigee (omega)(deg)", "Right acension of ascending node (Omega)(deg)", "True anomaly (v)(deg)", "Frequency (f)(rev/day)"]
+    kep_elements = ["Semi major axis (a)(km)", "Eccentricity (e)", "Inclination (i)(deg)", "Argument of perigee (ω)(deg)", "Right acension of ascending node (Ω)(deg)", "True anomaly (v)(deg)", "Frequency (f)(rev/day)"]
     det_methods = ["Lamberts Kalman", "Spline Interpolation", "Ellipse Best Fit", "Gibbs 3 Vector"]
     method_name = ["lamb", "inter", "ellip", "gibb"]
     
@@ -193,7 +193,7 @@ def process(data_file, error_apriori, name):
             ax.set_xlabel('x (km)')
             ax.set_ylabel('y (km)')
             ax.set_zlabel('z (km)')
-            plt.savefig(os.path.join(os.getcwd(), "example_data", "DestinationSVG", '%s_%s.svg'%(name, method_name[j])), format="svg")
+            plt.savefig(os.getcwd() + "/example_data/DestinationSVG/" + '%s_%s.svg'%(name, method_name[j]), format="svg")
             print("saved %s_%s.svg"%(name, method_name[j]))
 
 def main():
